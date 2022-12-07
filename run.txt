@@ -1,223 +1,33 @@
-import logging
-from configs import token, questions
-import aiogram.utils.markdown as md
-from aiogram import Bot, Dispatcher, types
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
-from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import ParseMode
-from aiogram.utils import executor
-
-
-logging.basicConfig(level=logging.INFO)
-bot = Bot(token)
-storage = MemoryStorage()
-dp = Dispatcher(bot, storage=storage)
-
-
-class User(StatesGroup):
-    name = State()
-    surname = State()
-    group = State()
-    test1 = State()
-    test2 = State()
-    test3 = State()
-    test4 = State()
-    test5 = State()
-    test6 = State()
-    test7 = State()
-    test8 = State()
-    test9 = State()
-    test10 = State()
-    test11 = State()
-    test12 = State()
-    test13 = State()
-    test14 = State()
-    test15 = State()
-    test16 = State()
-    test17 = State()
-    test18 = State()
-    test19 = State()
-    test20 = State()
-    test21 = State()
-    test22 = State()
-    test23 = State()
-    test24 = State()
-    test25 = State()
-    test26 = State()
-    test27 = State()
-    test28 = State()
-    test29 = State()
-    test30 = State()
-    test31 = State()
-    test32 = State()
-    test33 = State()
-    test34 = State()
-    test35 = State()
-    test36 = State()
-    test37 = State()
-    test38 = State()
-    test39 = State()
-    test40 = State()
-    test41 = State()
-    test42 = State()
-    test43 = State()
-    test44 = State()
-    test45 = State()
-    test46 = State()
-    test47 = State()
-    test48 = State()
-    test49 = State()
-    test50 = State()
-    test51 = State()
-    test52 = State()
-    test53 = State()
-    test54 = State()
-    test55 = State()
-    test56 = State()
-    test57 = State()
-    test58 = State()
-    test59 = State()
-    test60 = State()
-    test61 = State()
-    test62 = State()
-    test63 = State()
-    test64 = State()
-    test65 = State()
-    test66 = State()
-    test67 = State()
-    test68 = State()
-    test69 = State()
-    test70 = State()
-    test71 = State()
-    test72 = State()
-    test73 = State()
-    test74 = State()
-    test75 = State()
-    test76 = State()
-    test77 = State()
-    test78 = State()
-    test79 = State()
-    test80 = State()
-    test81 = State()
-    test82 = State()
-    test83 = State()
-    test84 = State()
-    test85 = State()
-    test86 = State()
-    test87 = State()
-    test88 = State()
-    test89 = State()
-    test90 = State()
-    test91 = State()
-    test92 = State()
-    test93 = State()
-    test94 = State()
-    test95 = State()
-    test96 = State()
-    test97 = State()
-    test98 = State()
-    test99 = State()
-    test100 = State()
-    test101 = State()
-    test102 = State()
-    test103 = State()
-    test104 = State()
-    test105 = State()
-    test106 = State()
-    test107 = State()
-    test108 = State()
-    test109 = State()
-    test110 = State()
-
-
-@dp.message_handler(commands='start')
-async def cmd_start(message: types.Message):
-    """
-    РќР°С‡Р°Р»Рѕ С‚РµСЃС‚Р°
-    """
-    # Set state
-    await User.name.set()
-
-    await bot.send_message(message.chat.id, "РРјСЏ")
-
-
-# You can use state '*' if you need to handle all states
-@dp.message_handler(state='*', commands='cancel')
-@dp.message_handler(Text(equals='cancel', ignore_case=True), state='*')
-async def cancel_handler(message: types.Message, state: FSMContext):
-    """
-    Allow user to cancel any action
-    """
-    current_state = await state.get_state()
-    if current_state is None:
-        return
-
-    logging.info('Cancelling state %r', current_state)
-    # Cancel state and inform user about it
-    await state.finish()
-    # And remove keyboard (just in case)
-    await message.reply('Cancelled.', reply_markup=types.ReplyKeyboardRemove())
-
-
-@dp.message_handler(state=User.name)
-async def process_name(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data['name'] = message.text
-
-    await User.next()
-    await bot.send_message(message.chat.id, "Р¤Р°РјРёР»РёСЏ")
-
-
-@dp.message_handler(state=User.surname)
-async def process_surname(message: types.Message, state: FSMContext):
-    # Update state and data
-    async with state.proxy() as data:
-        data['surname'] = message.text
-    await User.next()
-
-    # Configure ReplyKeyboardMarkup
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("8Рљ23", "8Рљ24")
-
-    await bot.send_message(message.chat.id, "Р“СЂСѓРїРїР°", reply_markup=markup)
-
-
-@dp.message_handler(lambda message: message.text not in ["8Рљ23", "8Рљ24"], state=User.group)
-async def process_group_invalid(message: types.Message):
-    return await bot.send_message(message.chat.id, "Р“СЂСѓРїРїР°")
-
-
-@dp.message_handler(state=User.group)
-async def process_group(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data['group'] = message.text
-    await User.next()
-
-    # Remove keyboard
-    markup = types.ReplyKeyboardRemove()
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("Р”Р°", "РќРµС‚")
-
-    await bot.send_message(
-        message.chat.id,
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚",
-        reply_markup=markup
-    )
-    await bot.send_message(
-        message.chat.id,
-        "1: " + questions[0]
-    )
 
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test0
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
+
+
+@dp.message_handler(state=User.test0)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test0'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "1:" + questions[0]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test1
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -233,12 +43,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test2
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -254,12 +64,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test3
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -275,12 +85,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test4
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -296,12 +106,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test5
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -317,12 +127,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test6
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -338,12 +148,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test7
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -359,12 +169,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test8
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -380,12 +190,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test9
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -401,12 +211,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test10
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -422,12 +232,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test11
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -443,12 +253,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test12
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -464,12 +274,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test13
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -485,12 +295,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test14
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -506,12 +316,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test15
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -527,12 +337,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test16
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -548,12 +358,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test17
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -569,12 +379,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test18
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -590,12 +400,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test19
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -611,12 +421,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test20
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -632,12 +442,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test21
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -653,12 +463,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test22
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -674,12 +484,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test23
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -695,12 +505,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test24
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -716,12 +526,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test25
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -737,12 +547,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test26
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -758,12 +568,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test27
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -779,12 +589,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test28
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -800,12 +610,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test29
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -821,12 +631,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test30
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -842,12 +652,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test31
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -863,12 +673,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test32
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -884,12 +694,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test33
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -905,12 +715,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test34
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -926,12 +736,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test35
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -947,12 +757,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test36
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -968,12 +778,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test37
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -989,12 +799,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test38
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1010,12 +820,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test39
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1031,12 +841,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test40
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1052,12 +862,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test41
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1073,12 +883,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test42
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1094,12 +904,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test43
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1115,12 +925,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test44
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1136,12 +946,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test45
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1157,12 +967,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test46
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1178,12 +988,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test47
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1199,12 +1009,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test48
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1220,12 +1030,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test49
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1241,12 +1051,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test50
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1262,12 +1072,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test51
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1283,12 +1093,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test52
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1304,12 +1114,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test53
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1325,12 +1135,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test54
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1346,12 +1156,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test55
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1367,12 +1177,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test56
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1388,12 +1198,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test57
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1409,12 +1219,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test58
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1430,12 +1240,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test59
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1451,12 +1261,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test60
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1472,12 +1282,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test61
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1493,12 +1303,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test62
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1514,12 +1324,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test63
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1535,12 +1345,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test64
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1556,12 +1366,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test65
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1577,12 +1387,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test66
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1598,12 +1408,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test67
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1619,12 +1429,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test68
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1640,12 +1450,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test69
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1661,12 +1471,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test70
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1682,12 +1492,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test71
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1703,12 +1513,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test72
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1724,12 +1534,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test73
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1745,12 +1555,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test74
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1766,12 +1576,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test75
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1787,12 +1597,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test76
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1808,12 +1618,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test77
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1829,12 +1639,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test78
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1850,12 +1660,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test79
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1871,12 +1681,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test80
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1892,12 +1702,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test81
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1913,12 +1723,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test82
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1934,12 +1744,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test83
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1955,12 +1765,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test84
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1976,12 +1786,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test85
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -1997,12 +1807,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test86
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2018,12 +1828,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test87
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2039,12 +1849,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test88
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2060,12 +1870,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test89
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2081,12 +1891,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test90
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2102,12 +1912,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test91
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2123,12 +1933,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test92
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2144,12 +1954,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test93
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2165,12 +1975,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test94
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2186,12 +1996,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test95
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2207,12 +2017,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test96
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2228,12 +2038,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test97
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2249,12 +2059,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test98
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2270,12 +2080,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test99
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2291,12 +2101,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test100
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2312,12 +2122,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test101
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2333,12 +2143,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test102
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2354,12 +2164,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test103
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2375,12 +2185,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test104
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2396,12 +2206,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test105
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2417,12 +2227,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test106
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2438,12 +2248,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test107
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2459,12 +2269,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test108
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2480,12 +2290,12 @@ async def process_test1(message: types.Message, state: FSMContext):
     )
 
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test109
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2500,14 +2310,13 @@ async def process_test1(message: types.Message, state: FSMContext):
         "110:" + questions[109]
     )
 
-
 @dp.message_handler(
-    lambda message: message.text not in ['Р”Р°', 'РќРµС‚'],
+    lambda message: message.text not in ['Да', 'Нет'],
     state=User.test110
 )
 async def process_gender_invalid(message: types.Message):
     return await message.reply(
-        "РћС‚РІРµС‚СЊ РґР° РёР»Рё РЅРµС‚"
+        "Ответь да или нет"
     )
 
 
@@ -2515,10 +2324,198 @@ async def process_gender_invalid(message: types.Message):
 async def process_test1(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['test110'] = message.text
-        markup = types.ReplyKeyboardRemove()
+    await User.next()
 
-        await state.finish()
+    await bot.send_message(
+        message.chat.id,
+        "111:" + questions[110]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test111
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
 
 
-if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+@dp.message_handler(state=User.test111)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test111'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "112:" + questions[111]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test112
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
+
+
+@dp.message_handler(state=User.test112)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test112'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "113:" + questions[112]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test113
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
+
+
+@dp.message_handler(state=User.test113)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test113'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "114:" + questions[113]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test114
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
+
+
+@dp.message_handler(state=User.test114)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test114'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "115:" + questions[114]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test115
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
+
+
+@dp.message_handler(state=User.test115)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test115'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "116:" + questions[115]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test116
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
+
+
+@dp.message_handler(state=User.test116)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test116'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "117:" + questions[116]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test117
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
+
+
+@dp.message_handler(state=User.test117)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test117'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "118:" + questions[117]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test118
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
+
+
+@dp.message_handler(state=User.test118)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test118'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "119:" + questions[118]
+    )
+
+@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test119
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
+
+
+@dp.message_handler(state=User.test119)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test119'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "120:" + questions[119]
+    )
