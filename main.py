@@ -1,24 +1,29 @@
 import logging
-from configs import token, questions
-import aiogram.utils.markdown as md
+from configs import token, questions, code
+# import aiogram.utils.markdown as md
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import ParseMode
+# from aiogram.types import ParseMode
 from aiogram.utils import executor
+import pandas as pd
 
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
+excel_dreval = {
+    'ФИО': [],
+    'Группа': [],
+    'Результаты': []
+}
 
 
 class User(StatesGroup):
-    name = State()
-    surname = State()
+    fio = State()
     group = State()
     test1 = State()
     test2 = State()
@@ -132,15 +137,24 @@ class User(StatesGroup):
     test110 = State()
 
 
+@dp.message_handler(commands=code)
+async def cmd_excel_print(message: types.Message):
+    pd.DataFrame(excel_dreval).to_excel('./dreval.xlsx', index=False)
+    await bot.send_document(
+        message.chat.id,
+        open('dreval.xlsx', 'rb')
+    )
+
+
 @dp.message_handler(commands='start')
 async def cmd_start(message: types.Message):
     """
     Начало теста
     """
     # Set state
-    await User.name.set()
+    await User.fio.set()
 
-    await bot.send_message(message.chat.id, "Имя")
+    await bot.send_message(message.chat.id, "ФИО")
 
 
 # You can use state '*' if you need to handle all states
@@ -161,32 +175,14 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     await message.reply('Cancelled.', reply_markup=types.ReplyKeyboardRemove())
 
 
-@dp.message_handler(state=User.name)
-async def process_name(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        data['name'] = message.text
-
-    await User.next()
-    await bot.send_message(message.chat.id, "Фамилия")
-
-
-@dp.message_handler(state=User.surname)
+@dp.message_handler(state=User.fio)
 async def process_surname(message: types.Message, state: FSMContext):
     # Update state and data
     async with state.proxy() as data:
-        data['surname'] = message.text
+        data['fio'] = message.text
     await User.next()
 
-    # Configure ReplyKeyboardMarkup
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
-    markup.add("8К23", "8К24")
-
-    await bot.send_message(message.chat.id, "Группа", reply_markup=markup)
-
-
-@dp.message_handler(lambda message: message.text not in ["8К23", "8К24"], state=User.group)
-async def process_group_invalid(message: types.Message):
-    return await bot.send_message(message.chat.id, "Группа")
+    await bot.send_message(message.chat.id, "Группа")
 
 
 @dp.message_handler(state=User.group)
@@ -196,7 +192,6 @@ async def process_group(message: types.Message, state: FSMContext):
     await User.next()
 
     # Remove keyboard
-    markup = types.ReplyKeyboardRemove()
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add("Да", "Нет")
 
@@ -232,6 +227,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "2:" + questions[1]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test2
@@ -252,6 +248,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "3:" + questions[2]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -274,6 +271,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "4:" + questions[3]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test4
@@ -294,6 +292,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "5:" + questions[4]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -316,6 +315,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "6:" + questions[5]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test6
@@ -336,6 +336,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "7:" + questions[6]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -358,6 +359,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "8:" + questions[7]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test8
@@ -378,6 +380,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "9:" + questions[8]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -400,6 +403,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "10:" + questions[9]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test10
@@ -420,6 +424,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "11:" + questions[10]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -442,6 +447,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "12:" + questions[11]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test12
@@ -462,6 +468,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "13:" + questions[12]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -484,6 +491,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "14:" + questions[13]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test14
@@ -504,6 +512,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "15:" + questions[14]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -526,6 +535,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "16:" + questions[15]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test16
@@ -546,6 +556,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "17:" + questions[16]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -568,6 +579,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "18:" + questions[17]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test18
@@ -588,6 +600,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "19:" + questions[18]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -610,6 +623,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "20:" + questions[19]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test20
@@ -630,6 +644,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "21:" + questions[20]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -652,6 +667,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "22:" + questions[21]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test22
@@ -672,6 +688,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "23:" + questions[22]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -694,6 +711,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "24:" + questions[23]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test24
@@ -714,6 +732,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "25:" + questions[24]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -736,6 +755,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "26:" + questions[25]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test26
@@ -756,6 +776,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "27:" + questions[26]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -778,6 +799,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "28:" + questions[27]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test28
@@ -798,6 +820,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "29:" + questions[28]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -820,6 +843,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "30:" + questions[29]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test30
@@ -840,6 +864,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "31:" + questions[30]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -862,6 +887,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "32:" + questions[31]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test32
@@ -882,6 +908,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "33:" + questions[32]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -904,6 +931,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "34:" + questions[33]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test34
@@ -924,6 +952,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "35:" + questions[34]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -946,6 +975,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "36:" + questions[35]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test36
@@ -966,6 +996,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "37:" + questions[36]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -988,6 +1019,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "38:" + questions[37]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test38
@@ -1008,6 +1040,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "39:" + questions[38]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1030,6 +1063,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "40:" + questions[39]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test40
@@ -1050,6 +1084,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "41:" + questions[40]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1072,6 +1107,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "42:" + questions[41]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test42
@@ -1092,6 +1128,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "43:" + questions[42]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1114,6 +1151,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "44:" + questions[43]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test44
@@ -1134,6 +1172,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "45:" + questions[44]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1156,6 +1195,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "46:" + questions[45]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test46
@@ -1176,6 +1216,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "47:" + questions[46]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1198,6 +1239,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "48:" + questions[47]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test48
@@ -1218,6 +1260,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "49:" + questions[48]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1240,6 +1283,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "50:" + questions[49]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test50
@@ -1260,6 +1304,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "51:" + questions[50]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1282,6 +1327,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "52:" + questions[51]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test52
@@ -1302,6 +1348,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "53:" + questions[52]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1324,6 +1371,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "54:" + questions[53]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test54
@@ -1344,6 +1392,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "55:" + questions[54]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1366,6 +1415,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "56:" + questions[55]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test56
@@ -1386,6 +1436,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "57:" + questions[56]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1408,6 +1459,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "58:" + questions[57]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test58
@@ -1428,6 +1480,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "59:" + questions[58]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1450,6 +1503,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "60:" + questions[59]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test60
@@ -1470,6 +1524,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "61:" + questions[60]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1492,6 +1547,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "62:" + questions[61]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test62
@@ -1512,6 +1568,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "63:" + questions[62]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1534,6 +1591,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "64:" + questions[63]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test64
@@ -1554,6 +1612,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "65:" + questions[64]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1576,6 +1635,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "66:" + questions[65]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test66
@@ -1596,6 +1656,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "67:" + questions[66]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1618,6 +1679,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "68:" + questions[67]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test68
@@ -1638,6 +1700,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "69:" + questions[68]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1660,6 +1723,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "70:" + questions[69]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test70
@@ -1680,6 +1744,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "71:" + questions[70]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1702,6 +1767,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "72:" + questions[71]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test72
@@ -1722,6 +1788,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "73:" + questions[72]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1744,6 +1811,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "74:" + questions[73]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test74
@@ -1764,6 +1832,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "75:" + questions[74]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1786,6 +1855,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "76:" + questions[75]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test76
@@ -1806,6 +1876,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "77:" + questions[76]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1828,6 +1899,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "78:" + questions[77]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test78
@@ -1848,6 +1920,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "79:" + questions[78]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1870,6 +1943,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "80:" + questions[79]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test80
@@ -1890,6 +1964,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "81:" + questions[80]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1912,6 +1987,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "82:" + questions[81]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test82
@@ -1932,6 +2008,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "83:" + questions[82]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1954,6 +2031,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "84:" + questions[83]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test84
@@ -1974,6 +2052,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "85:" + questions[84]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -1996,6 +2075,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "86:" + questions[85]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test86
@@ -2016,6 +2096,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "87:" + questions[86]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2038,6 +2119,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "88:" + questions[87]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test88
@@ -2058,6 +2140,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "89:" + questions[88]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2080,6 +2163,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "90:" + questions[89]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test90
@@ -2100,6 +2184,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "91:" + questions[90]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2122,6 +2207,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "92:" + questions[91]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test92
@@ -2143,6 +2229,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "93:" + questions[92]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test93
@@ -2161,8 +2248,10 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
+
         "94:" + questions[93]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2182,8 +2271,10 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
+
         "95:" + questions[94]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2206,6 +2297,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "96:" + questions[95]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test96
@@ -2227,6 +2319,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "97:" + questions[96]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test97
@@ -2246,7 +2339,9 @@ async def process_test1(message: types.Message, state: FSMContext):
     await bot.send_message(
         message.chat.id,
         "98:" + questions[97]
+
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2269,6 +2364,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "99:" + questions[98]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test99
@@ -2288,7 +2384,9 @@ async def process_test1(message: types.Message, state: FSMContext):
     await bot.send_message(
         message.chat.id,
         "100:" + questions[99]
+
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2311,6 +2409,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "101:" + questions[100]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test101
@@ -2329,8 +2428,10 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
+
         "102:" + questions[101]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2351,7 +2452,9 @@ async def process_test1(message: types.Message, state: FSMContext):
     await bot.send_message(
         message.chat.id,
         "103:" + questions[102]
+
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2374,6 +2477,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "104:" + questions[103]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test104
@@ -2391,9 +2495,11 @@ async def process_test1(message: types.Message, state: FSMContext):
     await User.next()
 
     await bot.send_message(
+
         message.chat.id,
         "105:" + questions[104]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2416,6 +2522,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "106:" + questions[105]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test106
@@ -2436,6 +2543,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         message.chat.id,
         "107:" + questions[106]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2458,6 +2566,7 @@ async def process_test1(message: types.Message, state: FSMContext):
         "108:" + questions[107]
     )
 
+
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
     state=User.test108
@@ -2472,12 +2581,14 @@ async def process_gender_invalid(message: types.Message):
 async def process_test1(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['test108'] = message.text
+
     await User.next()
 
     await bot.send_message(
         message.chat.id,
         "109:" + questions[108]
     )
+
 
 @dp.message_handler(
     lambda message: message.text not in ['Да', 'Нет'],
@@ -2515,7 +2626,15 @@ async def process_gender_invalid(message: types.Message):
 async def process_test1(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['test110'] = message.text
-        markup = types.ReplyKeyboardRemove()
+
+        excel_dreval['ФИО'].append(data['fio'])
+        excel_dreval['Группа'].append(data['group'])
+
+        await bot.send_message(
+            message.chat.id,
+            "CLown",
+            reply_markup=types.ReplyKeyboardRemove()
+        )
 
         await state.finish()
 
