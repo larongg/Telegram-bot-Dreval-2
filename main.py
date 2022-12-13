@@ -2629,10 +2629,13 @@ async def process_test1(message: types.Message, state: FSMContext):
 
         excel_dreval['ФИО'].append(data['fio'])
         excel_dreval['Группа'].append(data['group'])
+        arra = []
+        for i in range(1, 111):
+            arra.append(data['test' + str(i)])
 
         await bot.send_message(
             message.chat.id,
-            "CLown",
+            f(arra),
             reply_markup=types.ReplyKeyboardRemove()
         )
 
