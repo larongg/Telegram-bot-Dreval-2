@@ -1,4 +1,5 @@
 import logging
+from answers import answers_from
 from configs import token, questions, code
 # import aiogram.utils.markdown as md
 from aiogram import Bot, Dispatcher, types
@@ -18,7 +19,8 @@ dp = Dispatcher(bot, storage=storage)
 excel_dreval = {
     'ФИО': [],
     'Группа': [],
-    'Результаты': []
+    'Сильные стороны': [],
+    'Слабые стороны' : []
 }
 
 
@@ -2182,7 +2184,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "91:" + questions[90]
+        "91: " + questions[90]
     )
 
 
@@ -2204,7 +2206,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "92:" + questions[91]
+        "92: " + questions[91]
     )
 
 
@@ -2226,7 +2228,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "93:" + questions[92]
+        "93: " + questions[92]
     )
 
 
@@ -2249,7 +2251,7 @@ async def process_test1(message: types.Message, state: FSMContext):
     await bot.send_message(
         message.chat.id,
 
-        "94:" + questions[93]
+        "94: " + questions[93]
     )
 
 
@@ -2272,7 +2274,7 @@ async def process_test1(message: types.Message, state: FSMContext):
     await bot.send_message(
         message.chat.id,
 
-        "95:" + questions[94]
+        "95: " + questions[94]
     )
 
 
@@ -2294,7 +2296,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "96:" + questions[95]
+        "96: " + questions[95]
     )
 
 
@@ -2316,7 +2318,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "97:" + questions[96]
+        "97 :" + questions[96]
     )
 
 
@@ -2338,7 +2340,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "98:" + questions[97]
+        "98: " + questions[97]
 
     )
 
@@ -2361,7 +2363,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "99:" + questions[98]
+        "99: " + questions[98]
     )
 
 
@@ -2383,7 +2385,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "100:" + questions[99]
+        "100: " + questions[99]
 
     )
 
@@ -2406,7 +2408,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "101:" + questions[100]
+        "101: " + questions[100]
     )
 
 
@@ -2429,7 +2431,7 @@ async def process_test1(message: types.Message, state: FSMContext):
     await bot.send_message(
         message.chat.id,
 
-        "102:" + questions[101]
+        "102: " + questions[101]
     )
 
 
@@ -2451,7 +2453,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "103:" + questions[102]
+        "103: " + questions[102]
 
     )
 
@@ -2474,7 +2476,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "104:" + questions[103]
+        "104: " + questions[103]
     )
 
 
@@ -2497,7 +2499,7 @@ async def process_test1(message: types.Message, state: FSMContext):
     await bot.send_message(
 
         message.chat.id,
-        "105:" + questions[104]
+        "105: " + questions[104]
     )
 
 
@@ -2519,7 +2521,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "106:" + questions[105]
+        "106: " + questions[105]
     )
 
 
@@ -2541,7 +2543,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "107:" + questions[106]
+        "107: " + questions[106]
     )
 
 
@@ -2563,7 +2565,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "108:" + questions[107]
+        "108: " + questions[107]
     )
 
 
@@ -2586,7 +2588,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "109:" + questions[108]
+        "109: " + questions[108]
     )
 
 
@@ -2608,7 +2610,7 @@ async def process_test1(message: types.Message, state: FSMContext):
 
     await bot.send_message(
         message.chat.id,
-        "110:" + questions[109]
+        "110: " + questions[109]
     )
 
 
@@ -2633,9 +2635,15 @@ async def process_test1(message: types.Message, state: FSMContext):
         for i in range(1, 111):
             arra.append(data['test' + str(i)])
 
+        otvet = answers_from(arra)
+        excel_dreval['Сильные стороны'].append(otvet[17:otvet.find('\n')])
+        otvet = otvet[otvet.find('\n'):]
+        otvet = otvet.replace('\n', '')
+        excel_dreval['Слабые стороны'].append(otvet[16:])
+
         await bot.send_message(
             message.chat.id,
-            f(arra),
+            answers_from(arra),
             reply_markup=types.ReplyKeyboardRemove()
         )
 

@@ -32,10 +32,17 @@ def answers_from(answers):
         indexs.pop(i)
         indexs.insert(i-c,  i)
 
-    return {
-            "Сильные стороны": [skills[i] for i in indexs[-3:]],
-            "Слабые стороны": [skills[i] for i in indexs[:3]]
-    }
+    otvet = "Сильные стороны: "
+    for i in indexs[-3:]:
+        otvet += skills[i].lower() + ', '
+    otvet = otvet[:len(otvet)-2] + '.\n'
+    otvet += "\nСлабые стороны: "
+    for i in indexs[:3]:
+        otvet += skills[i].lower() + ', '
+    otvet = otvet[:len(otvet)-2] + '.'
+
+    return otvet
+
 
 if __name__ == "__main__":
     print(answers_from(['да']))
