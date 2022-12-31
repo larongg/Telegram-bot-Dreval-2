@@ -1,8 +1,20 @@
-from answers import answers_from
+'''@dp.message_handler(
+    lambda message: message.text not in ['Да', 'Нет'],
+    state=User.test106
+)
+async def process_gender_invalid(message: types.Message):
+    return await message.reply(
+        "Ответь да или нет"
+    )
 
-otvet = answers_from(['Да'])
 
-print(otvet[17:otvet.find('\n')])
-otvet = otvet[otvet.find('\n'):]
-otvet = otvet.replace('\n', '')
-print(otvet[16:])
+@dp.message_handler(state=User.test106)
+async def process_test1(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['test106'] = message.text
+    await User.next()
+
+    await bot.send_message(
+        message.chat.id,
+        "{0}: " + questions[106]
+    )'''.f
